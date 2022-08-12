@@ -1,0 +1,6 @@
+/bin/*
+/pkg/*
+/src/pkg/*
+
+*.exe
+.env
