@@ -1,26 +1,29 @@
-package domain
+package middlewares
 
 import (
 	model "golang-base-code/src/app/models"
-	repository "golang-base-code/src/http/repository/users"
 
 	"gorm.io/gorm"
 )
 
-type mysqlUserDomain struct {
+type UserMiddleware interface {
+	Fetch() ([]model.User, error)
+}
+
+type userMiddlewareBuilder struct {
 	Db *gorm.DB
 }
 
 var users []model.User
 
-func MysqlUserDomain(connection *gorm.DB) repository.UserRepo {
-	return &mysqlUserDomain{
+func UserConnectionMw(connection *gorm.DB) UserMiddleware {
+	return &userMiddlewareBuilder{
 		Db: connection,
 	}
 }
 
-func (m *mysqlUserDomain) Fetch() ([]model.User, error) {
-	m.Db.Raw("SELECT * FROM users").Scan(&users)
+func (m *userMiddlewareBuilder) Fetch() ([]model.User, error) {
+	m.Db.Find(&users)
 
 	return users, nil
 }

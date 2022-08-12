@@ -1,23 +1,25 @@
-package database
+package migrations
 
 import (
 	model "golang-base-code/src/app/models"
-	repository "golang-base-code/src/http/repository/users"
 
 	"gorm.io/gorm"
 )
 
-type userMigration struct {
+type UserMigrationMigrator interface {
+	ImportSeeder()
+}
+type userMigrationBuilder struct {
 	conn *gorm.DB
 }
 
-func UserMigration(conn *gorm.DB) repository.UserMigrationRepo {
-	return &userMigration{
+func UserMigration(conn *gorm.DB) UserMigrationMigrator {
+	return &userMigrationBuilder{
 		conn: conn,
 	}
 }
 
-func (user *userMigration) ImportSeeder() {
+func (user *userMigrationBuilder) ImportSeeder() {
 	// Skip migration if users table already exist
 	// and run migration if users table not exist
 	isExists := user.conn.Migrator().HasTable("users")

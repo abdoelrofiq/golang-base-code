@@ -1,23 +1,27 @@
-package database
+package migrations
 
 import (
 	model "golang-base-code/src/app/models"
-	repository "golang-base-code/src/http/repository/books"
 
 	"gorm.io/gorm"
 )
 
-type booksMigration struct {
+type BooksMigrationMigrator interface {
+	ImportSeeder()
+	AddOwnerId()
+}
+
+type bookMigrationBuilder struct {
 	conn *gorm.DB
 }
 
-func BookMigration(conn *gorm.DB) repository.BooksMigrationRepo {
-	return &booksMigration{
+func BookMigration(conn *gorm.DB) BooksMigrationMigrator {
+	return &bookMigrationBuilder{
 		conn: conn,
 	}
 }
 
-func (book *booksMigration) ImportSeeder() {
+func (book *bookMigrationBuilder) ImportSeeder() {
 	// Skip migration if books table already exist
 	// and run migration if books table not exist
 	isExists := book.conn.Migrator().HasTable("books")
@@ -52,4 +56,8 @@ func (book *booksMigration) ImportSeeder() {
 	// Create table books and insert batch data dummy
 	book.conn.AutoMigrate(model.Books{})
 	book.conn.Create(books)
+}
+
+func (book *bookMigrationBuilder) AddOwnerId() {
+	book.conn.Migrator().AddColumn(model.Books{}, "OwnerId")
 }

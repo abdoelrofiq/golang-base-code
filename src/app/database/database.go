@@ -1,8 +1,9 @@
-package driver
+package database
 
 import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type ConfigDb struct {
@@ -15,7 +16,7 @@ type ConfigDb struct {
 
 func ConnectMysql(c ConfigDb) (*gorm.DB, error) {
 	dsn := c.MYSQL_USERNAME + ":" + c.MYSQL_PASSWORD + "@tcp(" + c.MYSQL_HOST + ":" + c.MYSQL_PORT + ")/" + c.MYSQL_DB + "?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
 	if err != nil {
 		panic("Cannot connect to database")
 	}

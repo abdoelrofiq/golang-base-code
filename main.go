@@ -2,7 +2,7 @@ package main
 
 import (
 	"golang-base-code/src/app/database"
-	"golang-base-code/src/app/driver"
+	"golang-base-code/src/app/migrations"
 	"golang-base-code/src/app/routes"
 	"net/http"
 
@@ -37,7 +37,7 @@ func getEnvValue(key string) string {
 	return os.Getenv(key)
 }
 
-var config = driver.ConfigDb{
+var config = database.ConfigDb{
 	MYSQL_USERNAME: getEnvValue("MYSQL_USERNAME"),
 	MYSQL_PASSWORD: getEnvValue("MYSQL_PASSWORD"),
 	MYSQL_HOST:     getEnvValue("MYSQL_HOST"),
@@ -49,10 +49,10 @@ func main() {
 	e := echo.New()
 	e.Validator = &RequestValidator{validator: validator.New()}
 
-	connection, _ := driver.ConnectMysql(config)
+	connection, _ := database.ConnectMysql(config)
 
 	routes.AppRoutes(e, connection)
-	database.RunMigration(connection)
+	migrations.RunMigration(connection)
 
 	// Start server
 	e.Start(":4200")

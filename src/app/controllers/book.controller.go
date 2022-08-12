@@ -4,7 +4,6 @@ import (
 	response "golang-base-code/src/app/core"
 	middleware "golang-base-code/src/app/middlewares"
 	model "golang-base-code/src/app/models"
-	repository "golang-base-code/src/http/repository/books"
 	"net/http"
 	"strconv"
 
@@ -13,12 +12,12 @@ import (
 )
 
 type booksHandler struct {
-	Repo repository.BooksRepo
+	Repo middleware.BooksMiddleware
 }
 
 func BooksHandler(db *gorm.DB) *booksHandler {
 	return &booksHandler{
-		Repo: middleware.MysqlBooksDomain(db),
+		Repo: middleware.BookConnectionMw(db),
 	}
 }
 
@@ -77,7 +76,7 @@ func (b *booksHandler) Update(c echo.Context) (err error) {
 		c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))
 	}
 
-	// Insert book and validate if no error
+	// Update book and validate if no error
 	book, err := b.Repo.Update(payload)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))

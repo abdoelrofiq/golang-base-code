@@ -3,7 +3,6 @@ package controllers
 import (
 	response "golang-base-code/src/app/core"
 	middleware "golang-base-code/src/app/middlewares"
-	repository "golang-base-code/src/http/repository/users"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -11,12 +10,12 @@ import (
 )
 
 type userHandler struct {
-	Repo repository.UserRepo
+	Repo middleware.UserMiddleware
 }
 
 func UsersHandler(db *gorm.DB) *userHandler {
 	return &userHandler{
-		Repo: middleware.MysqlUserDomain(db),
+		Repo: middleware.UserConnectionMw(db),
 	}
 }
 
