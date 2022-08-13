@@ -22,7 +22,6 @@ func BooksHandler(db *gorm.DB) *booksHandler {
 }
 
 func (b *booksHandler) GetAll(c echo.Context) error {
-	// Get all book and validate if no error
 	books, err := b.Repo.Fetch()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.ResponseFormatter(err.Error(), nil))
@@ -32,13 +31,11 @@ func (b *booksHandler) GetAll(c echo.Context) error {
 }
 
 func (b *booksHandler) GetById(c echo.Context) error {
-	// Validate params must number
 	bookId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter("failed get detail book, please insert number on param", nil))
 	}
 
-	// Get detail book and validate if exists
 	book, err := b.Repo.GetById(int32(bookId))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, response.ResponseFormatter(err.Error(), nil))
@@ -57,7 +54,6 @@ func (b *booksHandler) Create(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	// Insert book and validate if no error
 	book, err := b.Repo.Create(payload)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))
@@ -76,7 +72,6 @@ func (b *booksHandler) Update(c echo.Context) (err error) {
 		c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))
 	}
 
-	// Update book and validate if no error
 	book, err := b.Repo.Update(payload)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))
@@ -91,7 +86,6 @@ func (b *booksHandler) Delete(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter("failed delete detail book, please insert number on param", nil))
 	}
 
-	// Insert book and validate if no error
 	book, err := b.Repo.Delete(int32(bookId))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))

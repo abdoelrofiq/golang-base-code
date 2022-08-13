@@ -20,7 +20,6 @@ func UsersHandler(db *gorm.DB) *userHandler {
 }
 
 func (u *userHandler) GetAll(c echo.Context) error {
-	// Get all users and validate if no error
 	users, err := u.Repo.Fetch()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.ResponseFormatter(err.Error(), nil))

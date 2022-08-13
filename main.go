@@ -4,6 +4,7 @@ import (
 	"golang-base-code/src/app/database"
 	"golang-base-code/src/app/migrations"
 	"golang-base-code/src/app/routes"
+	"golang-base-code/src/app/seeders"
 	"net/http"
 
 	"github.com/go-playground/validator"
@@ -53,6 +54,7 @@ func main() {
 
 	routes.AppRoutes(e, connection)
 	migrations.RunMigration(connection)
+	seeders.RunSeeder(connection)
 
 	// Start server
 	e.Start(":4200")
