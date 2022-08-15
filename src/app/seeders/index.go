@@ -1,16 +1,22 @@
 package seeders
 
-import "gorm.io/gorm"
+import (
+	"golang-base-code/src/app/utilities"
+
+	"gorm.io/gorm"
+)
 
 func RunSeeder(connection *gorm.DB) {
+	migration := utilities.GetEnvValue("MIGRATION")
 
-	bookSeeder := BookSeeder(connection)
-	bookSeeder.InsertBookSeeder()
+	if migration == "UP" {
+		bookSeeder := BookSeeder(connection)
+		bookSeeder.InsertBookSeeder()
 
-	userSeeder := UserSeeder(connection)
-	userSeeder.InsertUserSeeder()
+		userSeeder := UserSeeder(connection)
+		userSeeder.InsertUserSeeder()
 
-	Professioneeder := Professioneeder(connection)
-	Professioneeder.InsertProfessionSeeder()
-
+		Professioneeder := Professioneeder(connection)
+		Professioneeder.InsertProfessionSeeder()
+	}
 }

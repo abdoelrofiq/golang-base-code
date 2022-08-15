@@ -7,7 +7,11 @@ import (
 )
 
 type BookMigrationBuilder interface {
-	CreateBookTable()
+	RunBookMigration()
+}
+
+func (book *bookMigrationConnection) RunBookMigration() {
+	CreateBookTable(book)
 }
 
 type bookMigrationConnection struct {
@@ -20,7 +24,7 @@ func BookMigration(conn *gorm.DB) BookMigrationBuilder {
 	}
 }
 
-func (book *bookMigrationConnection) CreateBookTable() {
+func CreateBookTable(book *bookMigrationConnection) {
 	isExists := book.conn.Migrator().HasTable(model.Book{})
 	if isExists {
 		return

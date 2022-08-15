@@ -1,6 +1,7 @@
 package database
 
 import (
+	"golang-base-code/src/app/utilities"
 	"log"
 
 	"gorm.io/driver/mysql"
@@ -20,13 +21,13 @@ func createMysqlDatabase(c ConfigDb) bool {
 	dsn := c.MYSQL_USERNAME + ":" + c.MYSQL_PASSWORD + "@tcp(" + c.MYSQL_HOST + ":" + c.MYSQL_PORT + ")/" + "?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
 	if err != nil {
-		log.Printf("Can't connect to database server")
+		log.Printf("Can't connect to the database server")
 	}
 
 	createDatabaseQuery := "CREATE DATABASE `" + c.MYSQL_DB + "`;"
 	db = db.Exec(createDatabaseQuery)
 	if db.Error != nil {
-		log.Printf("Can't create database")
+		log.Printf("Can't create the database")
 	}
 
 	return true
@@ -45,10 +46,16 @@ func attemptMysqlConnection(c ConfigDb) (*gorm.DB, error) {
 func ConnectMysql(c ConfigDb) (*gorm.DB, error) {
 	db, err := attemptMysqlConnection(c)
 	if err != nil {
-		createMysqlDatabase(c)
-		db, err = attemptMysqlConnection(c)
-		if err != nil {
-			log.Printf("Can't connect to database")
+		migration := utilities.GetEnvValue("MIGRATION")
+
+		if migration == "UP" {
+			createMysqlDatabase(c)
+			db, err = attemptMysqlConnection(c)
+			if err != nil {
+				log.Printf("Can't connect to the database")
+			}
+		} else {
+			log.Printf("Can't connect to the database")
 		}
 	}
 

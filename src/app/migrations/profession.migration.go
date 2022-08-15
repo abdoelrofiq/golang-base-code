@@ -7,7 +7,11 @@ import (
 )
 
 type ProfessionMigrationBuilder interface {
-	CreateProfessionTable()
+	RunProfessionMigration()
+}
+
+func (profession *professionMigrationConnection) RunProfessionMigration() {
+	CreateProfessionTable(profession)
 }
 
 type professionMigrationConnection struct {
@@ -20,7 +24,7 @@ func ProfessionMigration(conn *gorm.DB) ProfessionMigrationBuilder {
 	}
 }
 
-func (profession *professionMigrationConnection) CreateProfessionTable() {
+func CreateProfessionTable(profession *professionMigrationConnection) {
 	isExists := profession.conn.Migrator().HasTable(model.Profession{})
 	if isExists {
 		return

@@ -1,17 +1,29 @@
 package migrations
 
-import "gorm.io/gorm"
+import (
+	"golang-base-code/src/app/utilities"
+	"log"
+
+	"gorm.io/gorm"
+)
 
 func RunMigration(connection *gorm.DB) {
+	migration := utilities.GetEnvValue("MIGRATION")
 
-	bookMigration := BookMigration(connection)
-	bookMigration.CreateBookTable()
+	if migration == "UP" {
+		bookMigration := BookMigration(connection)
+		bookMigration.RunBookMigration()
 
-	professionMigration := ProfessionMigration(connection)
-	professionMigration.CreateProfessionTable()
+		professionMigration := ProfessionMigration(connection)
+		professionMigration.RunProfessionMigration()
 
-	userMigration := UserMigration(connection)
-	userMigration.CreateUserTable()
-	userMigration.AddIsActive()
-
+		userMigration := UserMigration(connection)
+		userMigration.RunUserMigration()
+	} else if migration == "DOWN" {
+		dropDatabaseQuery := "DROP DATABASE `" + utilities.GetEnvValue("MYSQL_DB") + "`;"
+		connection = connection.Exec(dropDatabaseQuery)
+		if connection.Error != nil {
+			log.Printf("Can't drop the database")
+		}
+	}
 }

@@ -5,15 +5,11 @@ import (
 	"golang-base-code/src/app/migrations"
 	"golang-base-code/src/app/routes"
 	"golang-base-code/src/app/seeders"
+	"golang-base-code/src/app/utilities"
 	"net/http"
 
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-
-	"log"
-	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type RequestValidator struct {
@@ -27,23 +23,12 @@ func (cv *RequestValidator) Validate(i interface{}) error {
 	return nil
 }
 
-func getEnvValue(key string) string {
-
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-
-	return os.Getenv(key)
-}
-
 var config = database.ConfigDb{
-	MYSQL_USERNAME: getEnvValue("MYSQL_USERNAME"),
-	MYSQL_PASSWORD: getEnvValue("MYSQL_PASSWORD"),
-	MYSQL_HOST:     getEnvValue("MYSQL_HOST"),
-	MYSQL_DB:       getEnvValue("MYSQL_DB"),
-	MYSQL_PORT:     getEnvValue("MYSQL_PORT"),
+	MYSQL_USERNAME: utilities.GetEnvValue("MYSQL_USERNAME"),
+	MYSQL_PASSWORD: utilities.GetEnvValue("MYSQL_PASSWORD"),
+	MYSQL_HOST:     utilities.GetEnvValue("MYSQL_HOST"),
+	MYSQL_DB:       utilities.GetEnvValue("MYSQL_DB"),
+	MYSQL_PORT:     utilities.GetEnvValue("MYSQL_PORT"),
 }
 
 func main() {
