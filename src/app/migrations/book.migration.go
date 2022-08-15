@@ -7,8 +7,7 @@ import (
 )
 
 type BookMigrationBuilder interface {
-	CreateBooksTable()
-	AddOwnerId()
+	CreateBookTable()
 }
 
 type bookMigrationConnection struct {
@@ -21,24 +20,11 @@ func BookMigration(conn *gorm.DB) BookMigrationBuilder {
 	}
 }
 
-func (book *bookMigrationConnection) CreateBooksTable() {
-	isExists := book.conn.Migrator().HasTable("books")
+func (book *bookMigrationConnection) CreateBookTable() {
+	isExists := book.conn.Migrator().HasTable(model.Book{})
 	if isExists {
 		return
 	}
 
-	book.conn.AutoMigrate(model.Books{})
-}
-
-func (book *bookMigrationConnection) AddOwnerId() {
-	type Books struct {
-		OwnerId int `json:"owner_id" validate:"required"`
-	}
-
-	isExists := book.conn.Migrator().HasColumn(Books{}, "OwnerId")
-	if isExists {
-		return
-	}
-
-	book.conn.Migrator().AddColumn(Books{}, "OwnerId")
+	book.conn.AutoMigrate(model.Book{})
 }

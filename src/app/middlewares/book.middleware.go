@@ -7,14 +7,14 @@ import (
 	"gorm.io/gorm"
 )
 
-var books []model.Books
-var book model.Books
+var books []model.Book
+var book model.Book
 
-type BooksMiddleware interface {
-	Fetch() ([]model.Books, error)
-	GetById(id int32) (model.Books, error)
-	Create(b *model.Books) (model.Books, error)
-	Update(b *model.Books) (model.Books, error)
+type BookMiddleware interface {
+	Fetch() ([]model.Book, error)
+	GetById(id int32) (model.Book, error)
+	Create(b *model.Book) (model.Book, error)
+	Update(b *model.Book) (model.Book, error)
 	Delete(id int32) (bool, error)
 }
 
@@ -22,19 +22,19 @@ type bookMiddlewareBuilder struct {
 	Db *gorm.DB
 }
 
-func BookConnectionMw(connection *gorm.DB) BooksMiddleware {
+func BookConnectionMw(connection *gorm.DB) BookMiddleware {
 	return &bookMiddlewareBuilder{
 		Db: connection,
 	}
 }
 
-func (m *bookMiddlewareBuilder) Fetch() ([]model.Books, error) {
+func (m *bookMiddlewareBuilder) Fetch() ([]model.Book, error) {
 	m.Db.Find(&books)
 
 	return books, nil
 }
 
-func (m *bookMiddlewareBuilder) GetById(bookId int32) (model.Books, error) {
+func (m *bookMiddlewareBuilder) GetById(bookId int32) (model.Book, error) {
 	m.Db.Where("id = ?", bookId).Find(&book)
 	if book.Id == 0 {
 		return book, errors.New("book not found")
@@ -43,26 +43,26 @@ func (m *bookMiddlewareBuilder) GetById(bookId int32) (model.Books, error) {
 	return book, nil
 }
 
-func (m *bookMiddlewareBuilder) Create(book *model.Books) (model.Books, error) {
+func (m *bookMiddlewareBuilder) Create(book *model.Book) (model.Book, error) {
 	result := m.Db.Model(&book).Create(book)
 	if result.Error != nil {
-		return model.Books{}, result.Error
+		return model.Book{}, result.Error
 	}
 
 	return *book, nil
 }
 
-func (m *bookMiddlewareBuilder) Update(book *model.Books) (model.Books, error) {
+func (m *bookMiddlewareBuilder) Update(book *model.Book) (model.Book, error) {
 	result := m.Db.Model(&book).Update("id", book.Id)
 	if result.Error != nil {
-		return model.Books{}, result.Error
+		return model.Book{}, result.Error
 	}
 
 	return *book, nil
 }
 
 func (m *bookMiddlewareBuilder) Delete(bookId int32) (bool, error) {
-	result := m.Db.Delete(&model.Books{}, bookId)
+	result := m.Db.Delete(&model.Book{}, bookId)
 	if result.Error != nil {
 		return false, result.Error
 	}

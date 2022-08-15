@@ -5,10 +5,13 @@ import "gorm.io/gorm"
 func RunMigration(connection *gorm.DB) {
 
 	bookMigration := BookMigration(connection)
-	bookMigration.CreateBooksTable()
-	bookMigration.AddOwnerId()
+	bookMigration.CreateBookTable()
+
+	professionMigration := ProfessionMigration(connection)
+	professionMigration.CreateProfessionTable()
 
 	userMigration := UserMigration(connection)
-	userMigration.CreateUsersTable()
+	userMigration.CreateUserTable()
+	userMigration.AddIsActive()
 
 }

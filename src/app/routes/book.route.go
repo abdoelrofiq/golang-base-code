@@ -8,7 +8,7 @@ import (
 )
 
 func bookRoutes(e *echo.Echo, connection *gorm.DB) {
-	boostore := controller.BooksHandler(connection)
+	boostore := controller.BookHandler(connection)
 	e.GET("/books", boostore.GetAll)
 	e.GET("/books/:id", boostore.GetById)
 	e.POST("/books", boostore.Create)

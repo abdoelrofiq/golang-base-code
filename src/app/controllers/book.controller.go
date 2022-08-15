@@ -11,26 +11,26 @@ import (
 	"gorm.io/gorm"
 )
 
-type booksHandler struct {
-	Repo middleware.BooksMiddleware
+type bookHandler struct {
+	Repo middleware.BookMiddleware
 }
 
-func BooksHandler(db *gorm.DB) *booksHandler {
-	return &booksHandler{
+func BookHandler(db *gorm.DB) *bookHandler {
+	return &bookHandler{
 		Repo: middleware.BookConnectionMw(db),
 	}
 }
 
-func (b *booksHandler) GetAll(c echo.Context) error {
-	books, err := b.Repo.Fetch()
+func (b *bookHandler) GetAll(c echo.Context) error {
+	book, err := b.Repo.Fetch()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.ResponseFormatter(err.Error(), nil))
 	}
 
-	return c.JSON(http.StatusOK, response.ResponseFormatter("success get all data", books))
+	return c.JSON(http.StatusOK, response.ResponseFormatter("success get all data", book))
 }
 
-func (b *booksHandler) GetById(c echo.Context) error {
+func (b *bookHandler) GetById(c echo.Context) error {
 	bookId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter("failed get detail book, please insert number on param", nil))
@@ -44,8 +44,8 @@ func (b *booksHandler) GetById(c echo.Context) error {
 	return c.JSON(http.StatusOK, response.ResponseFormatter("success get detail book", book))
 }
 
-func (b *booksHandler) Create(c echo.Context) (err error) {
-	payload := new(model.Books)
+func (b *bookHandler) Create(c echo.Context) (err error) {
+	payload := new(model.Book)
 	if err = c.Bind(payload); err != nil {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))
 	}
@@ -62,8 +62,8 @@ func (b *booksHandler) Create(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, response.ResponseFormatter("success create new book", book))
 }
 
-func (b *booksHandler) Update(c echo.Context) (err error) {
-	payload := new(model.Books)
+func (b *bookHandler) Update(c echo.Context) (err error) {
+	payload := new(model.Book)
 	if err = c.Bind(payload); err != nil {
 		c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))
 	}
@@ -80,7 +80,7 @@ func (b *booksHandler) Update(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, response.ResponseFormatter("success update book", book))
 }
 
-func (b *booksHandler) Delete(c echo.Context) error {
+func (b *bookHandler) Delete(c echo.Context) error {
 	bookId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter("failed delete detail book, please insert number on param", nil))

@@ -8,6 +8,6 @@ import (
 )
 
 func userRoutes(e *echo.Echo, connection *gorm.DB) {
-	users := controller.UsersHandler(connection)
-	e.GET("/users", users.GetAll)
+	user := controller.UserHandler(connection)
+	e.GET("/users", user.GetAll)
 }

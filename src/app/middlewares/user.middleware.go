@@ -23,7 +23,7 @@ func UserConnectionMw(connection *gorm.DB) UserMiddleware {
 }
 
 func (m *userMiddlewareBuilder) Fetch() ([]model.User, error) {
-	m.Db.Find(&users)
+	m.Db.Joins("Profession").Preload("Books", "author != ?", "Random Book").Find(&users)
 
 	return users, nil
 }

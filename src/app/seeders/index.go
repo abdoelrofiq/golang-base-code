@@ -5,9 +5,12 @@ import "gorm.io/gorm"
 func RunSeeder(connection *gorm.DB) {
 
 	bookSeeder := BookSeeder(connection)
-	bookSeeder.InsertBooksSeeder()
+	bookSeeder.InsertBookSeeder()
 
 	userSeeder := UserSeeder(connection)
-	userSeeder.InsertUsersSeeder()
+	userSeeder.InsertUserSeeder()
+
+	Professioneeder := Professioneeder(connection)
+	Professioneeder.InsertProfessionSeeder()
 
 }

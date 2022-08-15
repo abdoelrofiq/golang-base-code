@@ -7,7 +7,8 @@ import (
 )
 
 type UserMigrationBuilder interface {
-	CreateUsersTable()
+	CreateUserTable()
+	AddIsActive()
 }
 type userMigrationConnection struct {
 	conn *gorm.DB
@@ -19,11 +20,20 @@ func UserMigration(conn *gorm.DB) UserMigrationBuilder {
 	}
 }
 
-func (user *userMigrationConnection) CreateUsersTable() {
-	isExists := user.conn.Migrator().HasTable("users")
+func (user *userMigrationConnection) CreateUserTable() {
+	isExists := user.conn.Migrator().HasTable(&model.User{})
 	if isExists {
 		return
 	}
 
 	user.conn.AutoMigrate(model.User{})
+}
+
+func (user *userMigrationConnection) AddIsActive() {
+	isExists := user.conn.Migrator().HasColumn(&model.User{}, "IsActive")
+	if isExists {
+		return
+	}
+
+	user.conn.Migrator().AddColumn(&model.User{}, "IsActive")
 }

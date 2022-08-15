@@ -13,17 +13,17 @@ type userHandler struct {
 	Repo middleware.UserMiddleware
 }
 
-func UsersHandler(db *gorm.DB) *userHandler {
+func UserHandler(db *gorm.DB) *userHandler {
 	return &userHandler{
 		Repo: middleware.UserConnectionMw(db),
 	}
 }
 
 func (u *userHandler) GetAll(c echo.Context) error {
-	users, err := u.Repo.Fetch()
+	user, err := u.Repo.Fetch()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.ResponseFormatter(err.Error(), nil))
 	}
 
-	return c.JSON(http.StatusOK, response.ResponseFormatter("success get all data", users))
+	return c.JSON(http.StatusOK, response.ResponseFormatter("success get all data", user))
 }
