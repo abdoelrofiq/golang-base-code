@@ -10,17 +10,17 @@ import (
 )
 
 type userHandler struct {
-	Repo middleware.UserMiddleware
+	Middleware middleware.UserMiddleware
 }
 
 func UserHandler(db *gorm.DB) *userHandler {
 	return &userHandler{
-		Repo: middleware.UserConnectionMw(db),
+		Middleware: middleware.UserConnectionMw(db),
 	}
 }
 
 func (u *userHandler) GetAll(c echo.Context) error {
-	user, err := u.Repo.Fetch()
+	user, err := u.Middleware.Fetch()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.ResponseFormatter(err.Error(), nil))
 	}
