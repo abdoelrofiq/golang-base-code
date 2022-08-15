@@ -20,7 +20,7 @@ func RunMigration(connection *gorm.DB) {
 		userMigration := UserMigration(connection)
 		userMigration.RunUserMigration()
 	} else if migration == "DOWN" {
-		dropDatabaseQuery := "DROP DATABASE `" + utilities.GetEnvValue("MYSQL_DB") + "`;"
+		dropDatabaseQuery := "DROP DATABASE `" + utilities.GetEnvValue("DB_NAME") + "`;"
 		connection = connection.Exec(dropDatabaseQuery)
 		if connection.Error != nil {
 			log.Printf("Can't drop the database")

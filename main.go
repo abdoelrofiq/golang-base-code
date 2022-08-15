@@ -1,6 +1,7 @@
 package main
 
 import (
+	"golang-base-code/src/app/config"
 	"golang-base-code/src/app/database"
 	"golang-base-code/src/app/migrations"
 	"golang-base-code/src/app/routes"
@@ -23,24 +24,15 @@ func (cv *RequestValidator) Validate(i interface{}) error {
 	return nil
 }
 
-var config = database.ConfigDb{
-	MYSQL_USERNAME: utilities.GetEnvValue("MYSQL_USERNAME"),
-	MYSQL_PASSWORD: utilities.GetEnvValue("MYSQL_PASSWORD"),
-	MYSQL_HOST:     utilities.GetEnvValue("MYSQL_HOST"),
-	MYSQL_DB:       utilities.GetEnvValue("MYSQL_DB"),
-	MYSQL_PORT:     utilities.GetEnvValue("MYSQL_PORT"),
-}
-
 func main() {
 	e := echo.New()
 	e.Validator = &RequestValidator{validator: validator.New()}
 
-	connection, _ := database.ConnectMysql(config)
+	connection, _ := database.ConnectDatabase(config.ConfigDatabase())
 
 	routes.AppRoutes(e, connection)
 	migrations.RunMigration(connection)
 	seeders.RunSeeder(connection)
 
-	// Start server
-	e.Start(":4200")
+	e.Logger.Fatal(e.Start(":" + utilities.GetEnvValue("APP_PORT")))
 }
