@@ -46,6 +46,14 @@ func FQP(c echo.Context) (string, interface{}, error) {
 		return "", nil, nil
 	}
 
+	if len([]rune(filterQuery)) == 0 && len([]rune(rawfilterArgument)) > 0 {
+		return "", nil, errors.New("filter-query parameter not found")
+	}
+
+	if len([]rune(filterQuery)) > 0 && len([]rune(rawfilterArgument)) == 0 {
+		return "", nil, errors.New("filter-argument parameter not found")
+	}
+
 	filter := Filter{FilterQuery: filterQuery, FIlterArgument: rawfilterArgument}
 	filterArgument := map[string]interface{}{}
 	filterQueryString = filter.FilterQuery
