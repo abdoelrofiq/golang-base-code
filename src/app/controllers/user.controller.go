@@ -20,7 +20,7 @@ func UserHandler(db *gorm.DB) *userHandler {
 }
 
 func (u *userHandler) GetAll(c echo.Context) error {
-	user, err := u.Middleware.Fetch()
+	user, err := u.Middleware.Fetch(c)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.ResponseFormatter(err.Error(), nil))
 	}

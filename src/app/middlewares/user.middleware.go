@@ -1,13 +1,17 @@
 package middlewares
 
 import (
+	"errors"
+	"golang-base-code/src/app/core"
 	model "golang-base-code/src/app/models"
+
+	"github.com/labstack/echo/v4"
 
 	"gorm.io/gorm"
 )
 
 type UserMiddleware interface {
-	Fetch() ([]model.User, error)
+	Fetch(c echo.Context) ([]model.User, error)
 }
 
 type userMiddlewareBuilder struct {
@@ -22,8 +26,13 @@ func UserConnectionMw(connection *gorm.DB) UserMiddleware {
 	}
 }
 
-func (m *userMiddlewareBuilder) Fetch() ([]model.User, error) {
-	m.Db.Joins("Profession").Preload("Books", "author != ?", "Random Book").Find(&users)
+func (m *userMiddlewareBuilder) Fetch(c echo.Context) ([]model.User, error) {
+	filterQueryString, filterArgument, err := core.FilterQueryParser(c)
+	if err != nil {
+		return users, errors.New(err.Error())
+	}
+
+	m.Db.Where(filterQueryString, filterArgument).Joins("Profession").Preload("Books", "author != ?", "Random Book").Find(&users)
 
 	return users, nil
 }
