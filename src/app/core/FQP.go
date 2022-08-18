@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 
+	"gorm.io/gorm"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -35,7 +37,7 @@ func valueTypeChecker(value string) string {
 
 }
 
-func FQP(c echo.Context) (string, interface{}, error) {
+func FQPBuilder(c echo.Context) (string, interface{}, error) {
 	var replacementName string
 	var filterQueryString string
 	var valueType string
@@ -96,4 +98,21 @@ func FQP(c echo.Context) (string, interface{}, error) {
 	}
 
 	return filterQueryString, filterArgument, nil
+}
+
+func FQP(DB *gorm.DB, c echo.Context) (*gorm.DB, error) {
+	var queryDB *gorm.DB
+
+	filterQueryString, filterArgument, err := FQPBuilder(c)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	if len([]rune(filterQueryString)) == 0 && filterArgument == nil {
+		queryDB = DB
+	} else {
+		queryDB = DB.Where(filterQueryString, filterArgument)
+	}
+
+	return queryDB, nil
 }
