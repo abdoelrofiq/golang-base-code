@@ -22,7 +22,7 @@ func BookHandler(db *gorm.DB) *bookHandler {
 }
 
 func (b *bookHandler) GetAll(c echo.Context) error {
-	book, err := b.Middleware.Fetch()
+	book, err := b.Middleware.Fetch(c)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.ResponseFormatter(err.Error(), nil))
 	}

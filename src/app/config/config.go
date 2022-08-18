@@ -5,8 +5,8 @@ import (
 	"golang-base-code/src/app/utilities"
 )
 
-func ConfigDatabase() database.ConfigDatabase {
-	var configDatabase = database.ConfigDatabase{
+func DatabaseConfig() database.DatabaseConfig {
+	var databaseConfig = database.DatabaseConfig{
 		DB_USERNAME: utilities.GetEnvValue("DB_USERNAME"),
 		DB_PASSWORD: utilities.GetEnvValue("DB_PASSWORD"),
 		DB_HOST:     utilities.GetEnvValue("DB_HOST"),
@@ -14,5 +14,5 @@ func ConfigDatabase() database.ConfigDatabase {
 		DB_PORT:     utilities.GetEnvValue("DB_PORT"),
 	}
 
-	return configDatabase
+	return databaseConfig
 }

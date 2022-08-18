@@ -28,7 +28,7 @@ func main() {
 	e := echo.New()
 	e.Validator = &RequestValidator{validator: validator.New()}
 
-	connection, _ := database.ConnectDatabase(config.ConfigDatabase())
+	connection, _ := database.ConnectDatabase(config.DatabaseConfig())
 
 	routes.AppRoutes(e, connection)
 	migrations.RunMigration(connection)
