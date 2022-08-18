@@ -27,12 +27,20 @@ func UserConnectionMw(connection *gorm.DB) UserMiddleware {
 }
 
 func (m *userMiddlewareBuilder) Fetch(c echo.Context) ([]model.User, error) {
-	filterQueryString, filterArgument, err := core.FilterQueryParser(c)
+	var queryDB *gorm.DB
+
+	filterQueryString, filterArgument, err := core.FQP(c)
 	if err != nil {
 		return users, errors.New(err.Error())
 	}
 
-	m.Db.Where(filterQueryString, filterArgument).Joins("Profession").Preload("Books", "author != ?", "Random Book").Find(&users)
+	if len([]rune(filterQueryString)) == 0 && filterArgument == nil {
+		queryDB = m.Db
+	} else {
+		queryDB = m.Db.Where(filterQueryString, filterArgument)
+	}
+
+	queryDB.Joins("Profession").Preload("Books", "author != ?", "Random Book").Find(&users)
 
 	return users, nil
 }
