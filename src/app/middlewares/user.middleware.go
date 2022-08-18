@@ -15,24 +15,27 @@ type UserMiddleware interface {
 }
 
 type userMiddlewareBuilder struct {
-	Db *gorm.DB
+	DB *gorm.DB
 }
 
 var users []model.User
 
 func UserConnectionMw(connection *gorm.DB) UserMiddleware {
 	return &userMiddlewareBuilder{
-		Db: connection,
+		DB: connection,
 	}
 }
 
 func (m *userMiddlewareBuilder) Fetch(c echo.Context) ([]model.User, error) {
-	filterQueryString, filterArgument, err := core.FilterQueryParser(c)
+	FQP, err := core.FQP(m.DB, c)
 	if err != nil {
 		return users, errors.New(err.Error())
 	}
 
-	m.Db.Where(filterQueryString, filterArgument).Joins("Profession").Preload("Books", "author != ?", "Random Book").Find(&users)
+	result := FQP.Joins("Profession").Preload("Books", "author != ?", "Random Book").Find(&users)
+	if result.Error != nil {
+		return users, errors.New(result.Error.Error())
+	}
 
 	return users, nil
 }
