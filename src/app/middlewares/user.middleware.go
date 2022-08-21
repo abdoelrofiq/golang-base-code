@@ -26,8 +26,8 @@ func UserConnectionMw(connection *gorm.DB) UserMiddleware {
 	}
 }
 
-func (m *userMiddlewareBuilder) Fetch(c echo.Context) ([]model.User, error) {
-	FQP, err := core.FQP(m.DB, c)
+func (conn *userMiddlewareBuilder) Fetch(c echo.Context) ([]model.User, error) {
+	FQP, err := core.FQP(conn.DB, c)
 	if err != nil {
 		return users, errors.New(err.Error())
 	}
