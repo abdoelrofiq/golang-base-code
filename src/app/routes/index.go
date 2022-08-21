@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"golang-base-code/src/app/utilities"
 	"net/http"
 
 	"github.com/go-playground/validator"
@@ -26,7 +27,7 @@ func AppRoutes(e *echo.Echo, connection *gorm.DB) {
 
 	restricted := e.Group("/restricted")
 	echoConfig := middleware.JWTConfig{
-		SigningKey: []byte("secret"),
+		SigningKey: []byte(utilities.GetEnvValue("JWT_TOKEN_SECRET")),
 	}
 	restricted.Use(middleware.JWTWithConfig(echoConfig))
 

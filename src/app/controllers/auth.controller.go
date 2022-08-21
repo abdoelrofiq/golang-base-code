@@ -28,7 +28,3 @@ func (a *authHandler) Login(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, response.ResponseFormatter("success to login", token))
 }
-
-func (a *authHandler) IsLoggedIn() echo.MiddlewareFunc {
-	return a.Middleware.IsLoggedIn()
-}

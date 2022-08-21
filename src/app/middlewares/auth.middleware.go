@@ -3,18 +3,17 @@ package middlewares
 import (
 	"errors"
 	"golang-base-code/src/app/models"
+	"golang-base-code/src/app/utilities"
 	"time"
 
 	"github.com/labstack/echo/v4"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 )
 
 type AuthMiddleware interface {
 	Login(c echo.Context) (models.JWTClaims, error)
-	IsLoggedIn() echo.MiddlewareFunc
 }
 
 type authMiddlewareBuilder struct {
@@ -39,7 +38,7 @@ func (m *authMiddlewareBuilder) Login(c echo.Context) (models.JWTClaims, error) 
 		claims["admin"] = false
 		claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
 
-		t, err := token.SignedString([]byte("secret"))
+		t, err := token.SignedString([]byte(utilities.GetEnvValue("JWT_TOKEN_SECRET")))
 		if err != nil {
 			return models.JWTClaims{}, errors.New("failed to generate token")
 		}
@@ -48,10 +47,4 @@ func (m *authMiddlewareBuilder) Login(c echo.Context) (models.JWTClaims, error) 
 	}
 
 	return models.JWTClaims{}, errors.New("user not found")
-}
-
-func (m *authMiddlewareBuilder) IsLoggedIn() echo.MiddlewareFunc {
-	return middleware.JWTWithConfig(middleware.JWTConfig{
-		SigningKey: []byte("secret"),
-	})
 }
