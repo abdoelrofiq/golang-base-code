@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func bookRoutes(e *echo.Echo, connection *gorm.DB) {
+func bookRoutes(e *echo.Echo, restricted *echo.Group, connection *gorm.DB) {
 	boostore := controller.BookHandler(connection)
 	e.GET("/books", boostore.GetAll)
 	e.GET("/books/:id", boostore.GetById)

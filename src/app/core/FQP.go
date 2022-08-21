@@ -88,6 +88,9 @@ func FQPBuilder(c echo.Context) (string, interface{}, error) {
 			case valueTypeChecker("INT"):
 				integerValue, _ := strconv.Atoi(rawValue)
 				filterArgument[replacementName] = integerValue
+			case valueTypeChecker("DATE"):
+				// value type of date will be string always
+				filterArgument[replacementName] = rawValue
 			default:
 				// default value type is string
 				filterArgument[replacementName] = rawValue

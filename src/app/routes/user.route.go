@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func userRoutes(e *echo.Echo, connection *gorm.DB) {
+func userRoutes(e *echo.Echo, restricted *echo.Group, connection *gorm.DB) {
 	user := controller.UserHandler(connection)
-	e.GET("/users", user.GetAll)
+	restricted.GET("/users", user.GetAll)
 }
