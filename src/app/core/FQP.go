@@ -180,6 +180,6 @@ func FQP(DB *gorm.DB, c echo.Context) (*gorm.DB, error) {
 	} else {
 		queryDB = DB.Where(filterQueryString, filterArgument)
 	}
-	fmt.Println(filterQueryString, filterArgument)
+
 	return queryDB, nil
 }
