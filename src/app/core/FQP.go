@@ -56,24 +56,28 @@ func valueTypeChecker(value string) (string, error) {
 	return valueType, nil
 }
 
+func trimValueSpace(value string) string {
+	return strings.TrimSpace(value)
+}
+
 func valueConverter(value string, valueType string) interface{} {
 	var newValue interface{}
 
 	switch valueType {
 	case valueTypeList("INT"):
-		integerValue, _ := strconv.Atoi(value)
+		integerValue, _ := strconv.Atoi(trimValueSpace(value))
 		newValue = integerValue
 	case valueTypeList("DATE"):
 		// value type of date will be string always
-		newValue = value
+		newValue = trimValueSpace(value)
 	case valueTypeList("ARRAY"):
-		newValue = arrayValueBuilder(value)
+		newValue = arrayValueBuilder(trimValueSpace(value))
 	case valueTypeList("BOOLEAN"):
-		booleanValue, _ := strconv.ParseBool(strings.TrimSpace(value))
+		booleanValue, _ := strconv.ParseBool(trimValueSpace(value))
 		newValue = booleanValue
 	default:
 		// default value type is string
-		newValue = value
+		newValue = trimValueSpace(value)
 	}
 
 	return newValue
