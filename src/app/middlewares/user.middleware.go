@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"errors"
-	"fmt"
 	"golang-base-code/src/app/core"
 	model "golang-base-code/src/app/models"
 
@@ -28,18 +27,17 @@ func UserConnectionMw(connection *gorm.DB) UserMiddleware {
 }
 
 func (conn *userMiddlewareBuilder) Fetch(c echo.Context) ([]model.User, error) {
+	currentUser := c.Get("currentUser").(model.User)
+
 	FQP, err := core.FQP(conn.DB, c)
 	if err != nil {
 		return users, errors.New(err.Error())
 	}
 
-	result := FQP.Joins("Profession").Preload("Books", "author != ?", "Random Book").Find(&users)
+	result := FQP.Where("users.id != ?", currentUser.Id).Joins("Profession").Preload("Books", "author != ?", "Random Book").Find(&users)
 	if result.Error != nil {
 		return users, errors.New(result.Error.Error())
 	}
-
-	currentUser := c.Get("currentUser")
-	fmt.Println("currentUser : ", currentUser)
 
 	return users, nil
 }

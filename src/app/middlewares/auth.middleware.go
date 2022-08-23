@@ -55,7 +55,7 @@ func (conn *authMiddlewareBuilder) Login(c echo.Context) (model.JWTClaims, error
 func (conn *authMiddlewareBuilder) TokenValueExtraction(c echo.Context) {
 	tokenExtraction := c.Get("user").(*jwt.Token)
 	claims := tokenExtraction.Claims.(jwt.MapClaims)
-	conn.DB.Where("email = ?", claims["username"]).Find(&user)
+	conn.DB.Where("email = ?", claims["username"]).Joins("Profession").Preload("Books").Find(&user)
 
 	c.Set("currentUser", user)
 }
