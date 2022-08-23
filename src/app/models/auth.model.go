@@ -1,6 +1,6 @@
 package models
 
 type JWTClaims struct {
-	Name  string `json:"name"`
-	Token string `json:"token"`
+	Username string `json:"username"`
+	Token    string `json:"token"`
 }

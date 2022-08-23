@@ -11,6 +11,10 @@ import (
 	"gorm.io/gorm"
 )
 
+type CustomContext struct {
+	echo.Context
+}
+
 type routeHandler struct {
 	connection *gorm.DB
 	restricted *echo.Group
@@ -30,14 +34,25 @@ func (rv *RequestValidator) Validate(i interface{}) error {
 
 func AppRoutes(e *echo.Echo, connection *gorm.DB) {
 	e.Use(middleware.Recover())
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			cc := &CustomContext{c}
+			return next(cc)
+		}
+	})
+	e.Validator = &RequestValidator{validator: validator.New()}
 
 	restricted := e.Group("/restricted")
 	echoConfig := middleware.JWTConfig{
 		SigningKey: []byte(utilities.GetEnvValue("JWT_TOKEN_SECRET")),
 	}
 	restricted.Use(middleware.JWTWithConfig(echoConfig))
-
-	e.Validator = &RequestValidator{validator: validator.New()}
+	restricted.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			cc := &CustomContext{c}
+			return next(cc)
+		}
+	})
 
 	routeHandler := &routeHandler{
 		connection: connection,

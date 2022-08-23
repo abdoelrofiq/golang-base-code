@@ -28,3 +28,7 @@ func (a *authHandler) Login(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, response.ResponseFormatter("success to login", token))
 }
+
+func (a *authHandler) TokenValueExtraction(c echo.Context) {
+	a.Middleware.TokenValueExtraction(c)
+}

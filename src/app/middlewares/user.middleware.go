@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"errors"
+	"fmt"
 	"golang-base-code/src/app/core"
 	model "golang-base-code/src/app/models"
 
@@ -36,6 +37,9 @@ func (conn *userMiddlewareBuilder) Fetch(c echo.Context) ([]model.User, error) {
 	if result.Error != nil {
 		return users, errors.New(result.Error.Error())
 	}
+
+	currentUser := c.Get("currentUser")
+	fmt.Println("currentUser : ", currentUser)
 
 	return users, nil
 }

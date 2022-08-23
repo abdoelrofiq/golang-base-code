@@ -32,14 +32,14 @@ func (user *userSeederConnection) InsertUserSeeder() {
 	var users = []model.User{
 		{
 			Id:           1,
-			Name:         "Wahyu",
-			Email:        "wahyuagung26@gmail.com",
+			Name:         "Abdul",
+			Email:        "abdul@gmail.com",
 			ProfessionId: 1,
 		},
 		{
 			Id:           2,
-			Name:         "Agung",
-			Email:        "wahyu.agung@majoo.id",
+			Name:         "Rofiq",
+			Email:        "rofiq@gmail.com",
 			ProfessionId: 1,
 		}}
 

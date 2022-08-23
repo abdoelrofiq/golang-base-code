@@ -32,30 +32,12 @@ func (book *bookSeederConnection) InsertBookSeeder() {
 	var books = []model.Book{
 		{
 			Id:          1,
-			Title:       "Peekaboo Whats in the Snow",
-			Price:       46800,
-			Author:      "Tim Pelangi Indonesia",
-			Publisher:   "PELANGI INDONESIA",
-			PublishDate: "2022-03-01",
+			Title:       "Aku",
+			Price:       50000,
+			Author:      "Unkown",
+			Publisher:   "Unkown",
+			PublishDate: "2022-08-15",
 			OwnerId:     1,
-		},
-		{
-			Id:          2,
-			Title:       "Pengantar Ilmu Tafsir",
-			Price:       43250,
-			Author:      "Drs. A. Fudlali",
-			Publisher:   "Angkasa",
-			PublishDate: "2005-01-01",
-			OwnerId:     1,
-		},
-		{
-			Id:          3,
-			Title:       "The Miracle Of Ikhlas",
-			Price:       29325,
-			Author:      "Anin DP",
-			Publisher:   "Mueeza",
-			PublishDate: "2021-02-01",
-			OwnerId:     2,
 		}}
 
 	book.conn.Create(books)
