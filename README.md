@@ -1,6 +1,11 @@
 # golang-base-code
 
-current features
+How to run it ?
+
+just type "air" to run it
+
+Current Features : 
+
 1. JWT validation
 2. Filter Query Parser
 
