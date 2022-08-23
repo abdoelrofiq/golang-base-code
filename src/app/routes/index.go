@@ -11,12 +11,18 @@ import (
 	"gorm.io/gorm"
 )
 
+type routeHandler struct {
+	connection *gorm.DB
+	restricted *echo.Group
+	open       *echo.Echo
+}
+
 type RequestValidator struct {
 	validator *validator.Validate
 }
 
-func (cv *RequestValidator) Validate(i interface{}) error {
-	if err := cv.validator.Struct(i); err != nil {
+func (rv *RequestValidator) Validate(i interface{}) error {
+	if err := rv.validator.Struct(i); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	return nil
@@ -33,7 +39,13 @@ func AppRoutes(e *echo.Echo, connection *gorm.DB) {
 
 	e.Validator = &RequestValidator{validator: validator.New()}
 
-	bookRoutes(e, restricted, connection)
-	userRoutes(e, restricted, connection)
-	authRoutes(e, restricted, connection)
+	routeHandler := &routeHandler{
+		connection: connection,
+		open:       e,
+		restricted: restricted,
+	}
+
+	bookRoutes(routeHandler)
+	userRoutes(routeHandler)
+	authRoutes(routeHandler)
 }
