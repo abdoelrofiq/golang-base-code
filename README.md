@@ -6,7 +6,7 @@ current features
 
 How to use FQP ?
 
-FQP needs 2 params to use it, those are filter-query and filter-argument. filter-query for query raw and filter-argument for argument value of raw query.
+FQP needs 2 params to use it, those are filter-query and filter-argument. filter-query for raw query and filter-argument for argument value of raw query.
 
 supported value types :
 1. integer
