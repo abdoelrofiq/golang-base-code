@@ -25,7 +25,7 @@ func getBracketIndex(value string) (int, int) {
 
 func valueTypeList(value string) string {
 
-	types := map[string]interface{}{
+	types := map[string]string{
 		"INT":     "int",
 		"STRING":  "string",
 		"DATE":    "date",
@@ -33,11 +33,7 @@ func valueTypeList(value string) string {
 		"BOOLEAN": "boolean",
 	}
 
-	if types[value] != nil {
-		return types[value].(string)
-	}
-
-	return ""
+	return types[value]
 
 }
 
@@ -47,16 +43,15 @@ func extractValueType(value string) string {
 }
 
 func valueTypeChecker(value string) (string, error) {
-	rawValueType := extractValueType(value)
-	valueType := valueTypeList(rawValueType)
+	valueType := valueTypeList(extractValueType(value))
 	if len([]rune(valueType)) == 0 {
-		return valueType, errors.New(fmt.Sprint("value type of ", rawValueType, " is not supported for now."))
+		return valueType, errors.New(fmt.Sprint("value type of ", extractValueType(value), " is not supported for now."))
 	}
 
 	return valueType, nil
 }
 
-func trimValueSpace(value string) string {
+func trimSpaceValue(value string) string {
 	return strings.TrimSpace(value)
 }
 
@@ -65,19 +60,19 @@ func valueConverter(value string, valueType string) interface{} {
 
 	switch valueType {
 	case valueTypeList("INT"):
-		integerValue, _ := strconv.Atoi(trimValueSpace(value))
+		integerValue, _ := strconv.Atoi(trimSpaceValue(value))
 		newValue = integerValue
 	case valueTypeList("DATE"):
 		// value type of date will be string always
-		newValue = trimValueSpace(value)
+		newValue = trimSpaceValue(value)
 	case valueTypeList("ARRAY"):
-		newValue = arrayValueBuilder(trimValueSpace(value))
+		newValue = arrayValueBuilder(trimSpaceValue(value))
 	case valueTypeList("BOOLEAN"):
-		booleanValue, _ := strconv.ParseBool(trimValueSpace(value))
+		booleanValue, _ := strconv.ParseBool(trimSpaceValue(value))
 		newValue = booleanValue
 	default:
 		// default value type is string
-		newValue = trimValueSpace(value)
+		newValue = trimSpaceValue(value)
 	}
 
 	return newValue
@@ -108,40 +103,39 @@ func argumentValueBuilder(element []string, valueType string) (interface{}, erro
 
 func replacementNameBuilder(element []string) (string, string, error) {
 	var valueType string
-	rawReplacementName := element[0]
-	firstBracketIndex, secondBracketIndex := getBracketIndex(rawReplacementName)
+	firstBracketIndex, secondBracketIndex := getBracketIndex(element[0])
 
 	if firstBracketIndex > 0 && secondBracketIndex > 0 {
 		// value type checker
-		valueType, err := valueTypeChecker(rawReplacementName)
+		valueType, err := valueTypeChecker(element[0])
 		if err != nil {
-			return rawReplacementName, valueType, errors.New(err.Error())
+			return element[0], valueType, errors.New(err.Error())
 		}
 
 		// create replacement name
-		return rawReplacementName[1:firstBracketIndex], valueType, nil
+		return element[0][1:firstBracketIndex], valueType, nil
 	}
 
-	return rawReplacementName, valueType, errors.New("failed to create replacement name")
+	return element[0], valueType, errors.New("failed to create replacement name")
 }
 
 func FQPBuilder(c echo.Context) (string, interface{}, error) {
 	filterQuery := c.QueryParam("filter-query")
-	rawfilterArgument := c.QueryParam("filter-argument")
+	filterArgumentBeforeSanitized := c.QueryParam("filter-argument")
 
-	if len([]rune(filterQuery)) == 0 && len([]rune(rawfilterArgument)) == 0 {
+	if len([]rune(filterQuery)) == 0 && len([]rune(filterArgumentBeforeSanitized)) == 0 {
 		return "", nil, nil
 	}
 
-	if len([]rune(filterQuery)) == 0 && len([]rune(rawfilterArgument)) > 0 {
+	if len([]rune(filterQuery)) == 0 && len([]rune(filterArgumentBeforeSanitized)) > 0 {
 		return "", nil, errors.New("filter-query parameter not found")
 	}
 
-	if len([]rune(filterQuery)) > 0 && len([]rune(rawfilterArgument)) == 0 {
+	if len([]rune(filterQuery)) > 0 && len([]rune(filterArgumentBeforeSanitized)) == 0 {
 		return "", nil, errors.New("filter-argument parameter not found")
 	}
 
-	filter := Filter{FilterQuery: filterQuery, FIlterArgument: rawfilterArgument}
+	filter := Filter{FilterQuery: filterQuery, FIlterArgument: filterArgumentBeforeSanitized}
 	filterArgument := map[string]interface{}{}
 	filterQueryString := filter.FilterQuery
 
@@ -150,15 +144,12 @@ func FQPBuilder(c echo.Context) (string, interface{}, error) {
 
 	for _, element := range filterArgumentInArray {
 
-		//convert element  from string to array
-		rawArgument := strings.Split(element, "=")
-
-		replacementName, valueType, err := replacementNameBuilder(rawArgument)
+		replacementName, valueType, err := replacementNameBuilder(strings.Split(element, "="))
 		if err != nil {
 			return filterQueryString, filterArgument, errors.New(err.Error())
 		}
 
-		argumentValue, err := argumentValueBuilder(rawArgument, valueType)
+		argumentValue, err := argumentValueBuilder(strings.Split(element, "="), valueType)
 		if err != nil {
 			return filterQueryString, filterArgument, errors.New(err.Error())
 		}
