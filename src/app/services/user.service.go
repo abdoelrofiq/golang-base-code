@@ -1,4 +1,4 @@
-package middlewares
+package services
 
 import (
 	"errors"
@@ -10,23 +10,23 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserMiddleware interface {
+type UserService interface {
 	Fetch(c echo.Context) ([]model.User, error)
 }
 
-type userMiddlewareBuilder struct {
+type userServiceBuilder struct {
 	DB *gorm.DB
 }
 
 var users []model.User
 
-func UserConnectionMw(connection *gorm.DB) UserMiddleware {
-	return &userMiddlewareBuilder{
+func UserConnectionMw(connection *gorm.DB) UserService {
+	return &userServiceBuilder{
 		DB: connection,
 	}
 }
 
-func (conn *userMiddlewareBuilder) Fetch(c echo.Context) ([]model.User, error) {
+func (conn *userServiceBuilder) Fetch(c echo.Context) ([]model.User, error) {
 	currentUser := c.Get("currentUser").(model.User)
 
 	FQP, err := core.FQP(conn.DB, c)

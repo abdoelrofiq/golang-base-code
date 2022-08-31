@@ -2,7 +2,7 @@ package controllers
 
 import (
 	response "golang-base-code/src/app/core"
-	middleware "golang-base-code/src/app/middlewares"
+	service "golang-base-code/src/app/services"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -10,17 +10,17 @@ import (
 )
 
 type authHandler struct {
-	Middleware middleware.AuthMiddleware
+	Service service.AuthService
 }
 
 func AuthHandler(db *gorm.DB) *authHandler {
 	return &authHandler{
-		Middleware: middleware.AuthConnectionMw(db),
+		Service: service.AuthConnectionMw(db),
 	}
 }
 
 func (a *authHandler) Login(c echo.Context) error {
-	token, err := a.Middleware.Login(c)
+	token, err := a.Service.Login(c)
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))
@@ -30,5 +30,5 @@ func (a *authHandler) Login(c echo.Context) error {
 }
 
 func (a *authHandler) TokenValueExtraction(c echo.Context) {
-	a.Middleware.TokenValueExtraction(c)
+	a.Service.TokenValueExtraction(c)
 }

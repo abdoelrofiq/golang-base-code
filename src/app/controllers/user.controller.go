@@ -2,7 +2,7 @@ package controllers
 
 import (
 	response "golang-base-code/src/app/core"
-	middleware "golang-base-code/src/app/middlewares"
+	service "golang-base-code/src/app/services"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -10,17 +10,17 @@ import (
 )
 
 type userHandler struct {
-	Middleware middleware.UserMiddleware
+	Service service.UserService
 }
 
 func UserHandler(db *gorm.DB) *userHandler {
 	return &userHandler{
-		Middleware: middleware.UserConnectionMw(db),
+		Service: service.UserConnectionMw(db),
 	}
 }
 
 func (u *userHandler) GetAll(c echo.Context) error {
-	user, err := u.Middleware.Fetch(c)
+	user, err := u.Service.Fetch(c)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.ResponseFormatter(err.Error(), nil))
 	}

@@ -1,4 +1,4 @@
-package middlewares
+package services
 
 import (
 	"errors"
@@ -14,22 +14,22 @@ import (
 
 var user model.User
 
-type AuthMiddleware interface {
+type AuthService interface {
 	Login(c echo.Context) (model.JWTClaims, error)
 	TokenValueExtraction(c echo.Context)
 }
 
-type authMiddlewareBuilder struct {
+type authServiceBuilder struct {
 	DB *gorm.DB
 }
 
-func AuthConnectionMw(connection *gorm.DB) AuthMiddleware {
-	return &authMiddlewareBuilder{
+func AuthConnectionMw(connection *gorm.DB) AuthService {
+	return &authServiceBuilder{
 		DB: connection,
 	}
 }
 
-func (conn *authMiddlewareBuilder) Login(c echo.Context) (model.JWTClaims, error) {
+func (conn *authServiceBuilder) Login(c echo.Context) (model.JWTClaims, error) {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
 
@@ -52,7 +52,7 @@ func (conn *authMiddlewareBuilder) Login(c echo.Context) (model.JWTClaims, error
 	return model.JWTClaims{}, errors.New("user not found")
 }
 
-func (conn *authMiddlewareBuilder) TokenValueExtraction(c echo.Context) {
+func (conn *authServiceBuilder) TokenValueExtraction(c echo.Context) {
 	tokenExtraction := c.Get("user").(*jwt.Token)
 	claims := tokenExtraction.Claims.(jwt.MapClaims)
 	conn.DB.Where("email = ?", claims["username"]).Joins("Profession").Preload("Books").Find(&user)

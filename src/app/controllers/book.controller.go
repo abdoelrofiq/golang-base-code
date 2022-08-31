@@ -2,8 +2,8 @@ package controllers
 
 import (
 	response "golang-base-code/src/app/core"
-	middleware "golang-base-code/src/app/middlewares"
 	model "golang-base-code/src/app/models"
+	service "golang-base-code/src/app/services"
 	"net/http"
 	"strconv"
 
@@ -12,17 +12,17 @@ import (
 )
 
 type bookHandler struct {
-	Middleware middleware.BookMiddleware
+	Service service.BookService
 }
 
 func BookHandler(db *gorm.DB) *bookHandler {
 	return &bookHandler{
-		Middleware: middleware.BookConnectionMw(db),
+		Service: service.BookConnectionMw(db),
 	}
 }
 
 func (b *bookHandler) GetAll(c echo.Context) error {
-	book, err := b.Middleware.Fetch(c)
+	book, err := b.Service.Fetch(c)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.ResponseFormatter(err.Error(), nil))
 	}
@@ -36,7 +36,7 @@ func (b *bookHandler) GetById(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter("failed get detail book, please insert number on param", nil))
 	}
 
-	book, err := b.Middleware.GetById(int32(bookId))
+	book, err := b.Service.GetById(int32(bookId))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, response.ResponseFormatter(err.Error(), nil))
 	}
@@ -54,7 +54,7 @@ func (b *bookHandler) Create(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	book, err := b.Middleware.Create(payload)
+	book, err := b.Service.Create(payload)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))
 	}
@@ -72,7 +72,7 @@ func (b *bookHandler) Update(c echo.Context) (err error) {
 		c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))
 	}
 
-	book, err := b.Middleware.Update(payload)
+	book, err := b.Service.Update(payload)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))
 	}
@@ -86,7 +86,7 @@ func (b *bookHandler) Delete(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter("failed delete detail book, please insert number on param", nil))
 	}
 
-	book, err := b.Middleware.Delete(int32(bookId))
+	book, err := b.Service.Delete(int32(bookId))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.ResponseFormatter(err.Error(), nil))
 	}
